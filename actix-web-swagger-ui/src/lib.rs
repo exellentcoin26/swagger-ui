@@ -52,9 +52,11 @@ fn spec_route(spec: Spec) -> Route {
     let content = spec.content;
 
     web::to(move || {
-        ready(HttpResponse::Ok()
-            .content_type(content_type.clone())
-            .body(content.clone()))
+        ready(
+            HttpResponse::Ok()
+                .content_type(content_type.clone())
+                .body(content.clone()),
+        )
     })
 }
 
@@ -65,9 +67,11 @@ fn index_route() -> Route {
         let config_url = format!("{}{}", path, CONFIG_FILE_PATH);
         let index_url = format!("{}/index.html?configUrl={}", path, config_url);
 
-        ready(HttpResponse::Found()
-            .append_header((LOCATION, index_url))
-            .finish())
+        ready(
+            HttpResponse::Found()
+                .append_header((LOCATION, index_url))
+                .finish(),
+        )
     })
 }
 
@@ -99,11 +103,15 @@ fn extension(filename: &str) -> &str {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
     use actix_http::Request;
-    use actix_web::{ test::{TestRequest, call_service, init_service, read_body}, web::scope, App};
     use actix_web::dev::ServiceResponse;
     use actix_web::web::Bytes;
+    use actix_web::{
+        test::{call_service, init_service, read_body, TestRequest},
+        web::scope,
+        App,
+    };
+    use std::fs;
     use swagger_ui::swagger_spec_file;
 
     use super::*;
@@ -112,8 +120,7 @@ mod tests {
         ($scope:expr) => {{
             let spec = swagger_spec_file!("../../swagger-ui/examples/openapi.json");
             let config = Config::default();
-            let app = App::new()
-                .service(scope($scope).configure(swagger(spec, config)));
+            let app = App::new().service(scope($scope).configure(swagger(spec, config)));
             init_service(app).await
         }};
     }
@@ -143,7 +150,13 @@ mod tests {
 
         let res = call_service(&mut app, get(prefix)).await;
         assert!(res.status().is_redirection());
-        assert!(has_location(&res, format!("{0}/index.html?configUrl={0}/swagger-ui-config.json", prefix)));
+        assert!(has_location(
+            &res,
+            format!(
+                "{0}/index.html?configUrl={0}/swagger-ui-config.json",
+                prefix
+            )
+        ));
 
         let res = call_service(&mut app, get(format!("{}/index.html", prefix))).await;
         assert!(res.status().is_success());

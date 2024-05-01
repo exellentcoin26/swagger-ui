@@ -1,6 +1,6 @@
 use rocket::handler::{Handler, Outcome};
 use rocket::http::{ContentType, Method};
-use rocket::response::{Content, Responder, Redirect};
+use rocket::response::{Content, Redirect, Responder};
 use rocket::{Data, Request, Route};
 
 /// A content handler is a wrapper type around `rocket::response::Content`, which can be turned into

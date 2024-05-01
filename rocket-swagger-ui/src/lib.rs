@@ -1,39 +1,33 @@
 mod handlers;
 
-use rocket::http::{ContentType};
-use rocket::{Route};
 use crate::handlers::{ContentHandler, RedirectHandler};
-use swagger_ui::{Assets, Config, Spec};
+use rocket::http::ContentType;
+use rocket::Route;
 use std::path::Path;
+use swagger_ui::{Assets, Config, Spec};
 
 fn mime_type(filename: &str) -> ContentType {
     let parts = filename.split('.').collect::<Vec<&str>>();
     match parts.last() {
-        Some(v) =>
-            match *v {
-                "html" => ContentType::HTML,
-                "js" => ContentType::JavaScript,
-                "png" => ContentType::PNG,
-                "css" => ContentType::CSS,
-                _ => ContentType::Plain
-            },
-        _ => ContentType::Plain
+        Some(v) => match *v {
+            "html" => ContentType::HTML,
+            "js" => ContentType::JavaScript,
+            "png" => ContentType::PNG,
+            "css" => ContentType::CSS,
+            _ => ContentType::Plain,
+        },
+        _ => ContentType::Plain,
     }
 }
 
 pub fn routes(spec: Spec, mut config: Config) -> Vec<Route> {
-    let spec_handler =
-        ContentHandler::bytes(
-            mime_type(spec.name.as_ref()),
-            spec.content.into(),
-        );
+    let spec_handler = ContentHandler::bytes(mime_type(spec.name.as_ref()), spec.content.into());
 
-    let spec_name: &str =
-        Path::new(spec.name.as_ref())
-            .file_name()
-            .unwrap_or("openapi.json".as_ref())
-            .to_str()
-            .unwrap_or("openapi.json".as_ref());
+    let spec_name: &str = Path::new(spec.name.as_ref())
+        .file_name()
+        .unwrap_or("openapi.json".as_ref())
+        .to_str()
+        .unwrap_or("openapi.json".as_ref());
 
     config.url = String::from(spec_name);
 
@@ -56,7 +50,7 @@ pub fn routes(spec: Spec, mut config: Config) -> Vec<Route> {
         let route = handler.into_route(path);
 
         routes.push(route);
-    };
+    }
 
     routes
 }
@@ -64,19 +58,21 @@ pub fn routes(spec: Spec, mut config: Config) -> Vec<Route> {
 #[cfg(test)]
 mod tests {
     use rocket;
-    use rocket::local::Client;
     use rocket::http::Status;
+    use rocket::local::Client;
 
     fn ignite() -> rocket::Rocket {
-        rocket::ignite()
-            .mount("/api/v1/swagger/",
-                   super::routes(
-                       // Specify file with openapi specification,
-                       // relative to current file
-                       swagger_ui::swagger_spec_file!("../../swagger-ui/examples/openapi.json"),
-                       swagger_ui::Config { ..Default::default() },
-                   ),
-            )
+        rocket::ignite().mount(
+            "/api/v1/swagger/",
+            super::routes(
+                // Specify file with openapi specification,
+                // relative to current file
+                swagger_ui::swagger_spec_file!("../../swagger-ui/examples/openapi.json"),
+                swagger_ui::Config {
+                    ..Default::default()
+                },
+            ),
+        )
     }
 
     #[test]
@@ -89,7 +85,9 @@ mod tests {
         let response = client.get("/api/v1/swagger/index.html").dispatch();
         assert_eq!(response.status(), Status::Ok);
 
-        let response = client.get("/api/v1/swagger/swagger-ui-config.json").dispatch();
+        let response = client
+            .get("/api/v1/swagger/swagger-ui-config.json")
+            .dispatch();
         assert_eq!(response.status(), Status::Ok);
 
         let mut response = client.get("/api/v1/swagger/openapi.json").dispatch();

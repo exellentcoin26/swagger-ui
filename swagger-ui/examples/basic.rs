@@ -1,4 +1,6 @@
-use swagger_ui::{Assets, Config, Spec, DefaultModelRendering, DocExpansion, Filter, swagger_spec_file};
+use swagger_ui::{
+    swagger_spec_file, Assets, Config, DefaultModelRendering, DocExpansion, Filter, Spec,
+};
 
 fn main() {
     println!("swagger-ui bundles files:");
@@ -7,7 +9,7 @@ fn main() {
         let filename = file.as_ref();
         println!("\t{}", filename);
         // `Assets::get(filename)` returns file content
-    };
+    }
 
     // Load openapi spec (compile-time)
     let _spec: Spec = swagger_spec_file!("./openapi.json");
@@ -26,6 +28,6 @@ fn main() {
         filter: Filter::Bool(false),
         max_displayed_tags: 0,
         show_extensions: false,
-        show_common_extensions: false
+        show_common_extensions: false,
     };
 }

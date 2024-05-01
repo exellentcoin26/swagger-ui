@@ -10,7 +10,8 @@ license = "MIT"
 
 [dependencies]
 swagger-ui = { version = "0.1", path = "../swagger-ui" }
-axum = { version = "0.6", features = ["headers"] }
+axum = { version = "0.7" }
+axum-extra = { version = "0.9.3", features = ["typed-header"] }
 mime = "0.3"
 mime_guess = "2.0"
 
@@ -18,5 +19,5 @@ mime_guess = "2.0"
 tokio = "1.32.0"
 hyper = { version = "0.14", features = ["full"] }
 tower = { version = "0.4", features = ["util"] }
-tower-http = { version = "0.4.0"}
+tower-http = { version = "0.4.0" }
 serde_json = "1.0"
