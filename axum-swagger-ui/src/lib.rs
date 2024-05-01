@@ -103,10 +103,10 @@ async fn handle_path(
 mod tests {
     use crate::swagger_ui_route;
     use axum::body::Body;
-    use axum_extra::headers::ContentType;
-    use axum::http::{Request, StatusCode, Method};
     use axum::http::header::CONTENT_TYPE;
+    use axum::http::{Method, Request, StatusCode};
     use axum::Router;
+    use axum_extra::headers::ContentType;
     use swagger_ui::Config;
     use tower::Service;
     use tower::ServiceExt;
@@ -160,7 +160,9 @@ mod tests {
             .parse()
             .unwrap();
         assert_eq!(header, ContentType::html());
-        axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
     }
 
     #[tokio::test]
@@ -188,7 +190,10 @@ mod tests {
             .parse()
             .unwrap();
         assert_eq!(header, ContentType::json());
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
-        let config: Config = serde_json::from_str(std::str::from_utf8(body.as_ref()).unwrap()).unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let config: Config =
+            serde_json::from_str(std::str::from_utf8(body.as_ref()).unwrap()).unwrap();
     }
 }
