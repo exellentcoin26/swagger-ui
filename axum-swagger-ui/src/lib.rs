@@ -17,7 +17,10 @@ pub trait SwaggerUiExt {
     ) -> Self;
 }
 
-impl SwaggerUiExt for Router {
+impl<S> SwaggerUiExt for Router<S>
+where
+    S: Clone + Send + Sync + 'static,
+{
     fn swagger_ui(
         self,
         path: &str,
@@ -29,7 +32,13 @@ impl SwaggerUiExt for Router {
 }
 
 /// creates a route that is configured to serve the specified spec and config with swagger_ui
-pub fn swagger_ui_route(spec: impl Into<SpecOrUrl>, config: impl Into<Option<Config>>) -> Router {
+pub fn swagger_ui_route<S>(
+    spec: impl Into<SpecOrUrl>,
+    config: impl Into<Option<Config>>,
+) -> Router<S>
+where
+    S: Clone + Send + Sync + 'static,
+{
     let config = Arc::new(config.into().unwrap_or_default());
     let spec = Arc::new(spec.into());
     Router::new().route("/", get(redirect_index)).route(
